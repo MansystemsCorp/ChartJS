@@ -9,6 +9,15 @@
     </icon>
 
     <properties>
+        <!-- Base64 Image -->
+        <property key="base64ImageAttribute" type="attribute" required="false">
+            <caption>Base64 Image Export</caption>
+            <category>Export</category>
+            <description>Export the rendered chart into a base64 encoded image and set the value into the selected attribute.</description>
+            <attributeTypes>
+                <attributeType name="String" />
+            </attributeTypes>
+        </property>
         <!-- Appearance -->
         <property key="width" type="integer" required="true" defaultValue="500">
             <caption>Width</caption>

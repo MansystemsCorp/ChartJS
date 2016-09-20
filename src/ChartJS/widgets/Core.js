@@ -76,6 +76,8 @@ define([
 
         _tooltipNode: null,
 
+        _base64Attribute: null,
+
         startup: function () {
             logger.debug(this.id + ".startup");
 
@@ -110,6 +112,9 @@ define([
             //     this._tooltipNode = domConstruct.toDom(_chartJSTooltipTemplate);
             //     domConstruct.place(this._tooltipNode, win.body());
             // }
+
+            // base64 export attribute
+            this._base64Attribute = this.base64ImageAttribute;
 
             this.connect(this.mxform, "resize", lang.hitch(this, function () {
                 this._resize();
@@ -549,6 +554,12 @@ define([
             return "rgba(220,220,220," + alpha + ")";
         },
 
+        _setBase64Attribute: function () {
+            if (this._mxObj && this._base64Attribute && this._base64Attribute !== '') {
+                this._mxObj.set(this._base64Attribute, this._chart.toBase64Image());
+            }
+        },
+
         _chartOptions: function (options) {
             logger.debug(this.id + "._chartOptions");
             // returns default chart options, mixed with specific options for a chart
@@ -573,7 +584,8 @@ define([
                 showTooltips : this.showTooltips,
                 animation: this.chartAnimation ? ({
 					duration: this.chartAnimation ? this.animationDuration : 0,
-					easing: this.animationEasing
+					easing: this.animationEasing,
+                    onComplete: lang.hitch(this, this._setBase64Attribute)
 				}) : false
             };
 
