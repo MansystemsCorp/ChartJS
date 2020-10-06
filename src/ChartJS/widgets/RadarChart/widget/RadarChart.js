@@ -1,4 +1,4 @@
-import defineWidget from 'widget-base-helpers/helpers/define-widget';
+import { defineWidget } from 'widget-base-helpers/helpers/define-widget';
 import Core from 'Core';
 import on from 'dojo/on';
 import { hitch } from 'dojo/_base/lang';
@@ -29,6 +29,7 @@ export default defineWidget('RadarChart.widget.RadarChart', null, {
         let _set = null;
         let maxpoints = 0;
 
+        this._activeDatasets = [];
         this._chartData.datasets = [];
         this._chartData.labels = [];
 
