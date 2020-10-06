@@ -29,6 +29,7 @@ export default defineWidget('LineChart.widget.LineChart', null, {
         let _set = null;
         let maxpoints = 0;
 
+        this._activeDatasets = [];
         this._chartData.datasets = [];
         this._chartData.labels = [];
         const sets = this._data.datasets = this._sortArrayObj(this._data.datasets);

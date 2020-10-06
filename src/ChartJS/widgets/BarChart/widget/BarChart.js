@@ -31,6 +31,7 @@ export default defineWidget('BarChart.widget.BarChart', null, {
         let _set = null;
         let maxpoints = 0;
 
+        this._activeDatasets = [];
         this._chartData.datasets = [];
         this._chartData.labels = [];
 
