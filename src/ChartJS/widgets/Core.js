@@ -37,6 +37,8 @@ export default defineWidget('Core', template, {
 
     // Set in the modeler
     responsiveRatio: 0,
+    progressBarType: "none",
+    microflowProgressString: "Loading",
 
     // Internal variables
     _chartJS: null,
@@ -70,7 +72,6 @@ export default defineWidget('Core', template, {
 
     startup() {
         this.log('startup');
-
         // Activate chartJS (and clone it, making sure globals are not overwritten for other instances).
         this._chartJS = clone(ChartJS);
 
@@ -330,6 +331,40 @@ export default defineWidget('Core', template, {
         this._ctx = this.canvasNode.getContext('2d');
     },
 
+    _executeWithProgress(microflow, guid, cb, errCb) {
+        // Wrap original function to add progress bar to all calls.
+        let callback = cb, errorCallback = errCb;
+        if ("blocking" === this.progressBarType || "regular" === this.progressBarType) {
+            this._progressId = mx.ui.showProgress(this.microflowProgressString || "", "blocking" === this.progressBarType);
+            callback = this._wrapCallback(cb);
+            errorCallback = this._wrapCallback(errCb);
+        }
+        this._execute(microflow, guid, callback, errorCallback);
+    },
+
+    _wrapCallback(cb) {
+        let callback = null;
+        if ("function" === typeof cb) {
+            callback = () => {
+                cb && cb();
+                this._hideProgress();
+            };
+        } else {
+            callback = () => {
+                this._hideProgress();
+            };
+        }
+        return callback;
+    },
+
+    _hideProgress() {
+        if (null !== this._progressId) {
+            this.log("Hide progress");
+            mx.ui.hideProgress(this._progressId);
+            this._progressId = null;
+        }
+    },
+
     _processData() {
         this.log('_processData needs to be replaced');
     },
@@ -356,16 +391,16 @@ export default defineWidget('Core', template, {
                     datasetObject = this._activeDatasets[ pointIndex ].obj;
                 }
 
-                this._execute(this.onclickDataSetMf, datasetObject && datasetObject.getGuid());
+                this._executeWithProgress(this.onclickDataSetMf, datasetObject && datasetObject.getGuid());
             }
 
             if (this.onclickDataPointMf && dataPointObject) {
-                this._execute(this.onclickDataPointMf, dataPointObject && dataPointObject.getGuid());
+                this._executeWithProgress(this.onclickDataPointMf, dataPointObject && dataPointObject.getGuid());
             }
         }
 
         if (this.onclickmf) {
-            this._execute(this.onclickmf, this._mxObj && this._mxObj.getGuid());
+            this._executeWithProgress(this.onclickmf, this._mxObj && this._mxObj.getGuid());
         }
     },
 
